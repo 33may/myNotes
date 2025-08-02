@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include <glad/glad.h>           // glad2 loader
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <imgui.h>
@@ -62,11 +62,56 @@ int main() {
         ImGui::NewFrame();
 
         ImGui::Begin("Canvas");
+
         ImVec2 canvas_pos = ImGui::GetCursorScreenPos();
         ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-        ImGui::InvisibleButton("canvas", canvas_size, ImGuiButtonFlags_MouseButtonLeft);
-        bool hovered = ImGui::IsItemHovered();
+
+        // enforce a minimum reasonable canvas size to avoid zero-size assertions
+        const float min_size = 64.0f;
+        if (canvas_size.x < min_size) canvas_size.x = min_size;
+        if (canvas_size.y < min_size) canvas_size.y = min_size;
+
+        // Optional: put canvas into a child region so scrolling / clipping is easier
+        ImGui::BeginChild("canvas_child", canvas_size, false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+        ImVec2 child_pos = ImGui::GetCursorScreenPos();
+        ImVec2 child_size = ImGui::GetContentRegionAvail();
+        bool hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByPopup);
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+        // draw background inside child
+        draw_list->AddRectFilled(child_pos,
+                                ImVec2(child_pos.x + child_size.x, child_pos.y + child_size.y),
+                                IM_COL32(40, 40, 50, 255));
+
+        // input handling: freehand stroke
+        if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            is_drawing = true;
+            strokes.emplace_back();
+            strokes.back().points.push_back(io.MousePos);
+        }
+        if (is_drawing) {
+            if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+                strokes.back().points.push_back(io.MousePos);
+            } else {
+                is_drawing = false;
+            }
+        }
+
+        // clipping and rendering strokes
+        draw_list->PushClipRect(child_pos,
+                                ImVec2(child_pos.x + child_size.x, child_pos.y + child_size.y),
+                                true);
+        for (const auto& s : strokes) {
+            if (s.points.size() < 2) continue;
+            draw_list->AddPolyline(s.points.data(),
+                                static_cast<int>(s.points.size()),
+                                IM_COL32(220, 220, 220, 255),
+                                ImDrawFlags_None,
+                                2.0f);
+        }
+        draw_list->PopClipRect();
+
+        ImGui::EndChild();
 
         draw_list->AddRectFilled(canvas_pos,
                                  ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y),

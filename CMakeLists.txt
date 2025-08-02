@@ -15,36 +15,13 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/external/glad/src/glad.c)
     message(FATAL_ERROR "GLAD source missing")
 endif()
 
-# build GLAD manually (external/glad is generator, not a CMake project)
+# build GLAD manually
 add_library(glad STATIC external/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/external/glad/include)
 
-# bring in GLFW and ImGui from submodules
+# bring in GLFW and ImGui
 add_subdirectory(external/glfw)
 add_subdirectory(external/imgui)
 
-# main binary
-add_executable(myNotes src/main.cpp)
-target_include_directories(myNotes PRIVATE external/imgui external/glad/include)
-
-# tell ImGui to use GLAD loader
-if(TARGET imgui::imgui)
-    target_compile_definitions(imgui::imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
-elseif(TARGET imgui)
-    target_compile_definitions(imgui PUBLIC IMGUI_IMPL_OPENGL_LOADER_GLAD)
-endif()
-
-# linking order
-if(TARGET imgui::imgui)
-    target_link_libraries(myNotes PRIVATE glfw glad imgui::imgui dl m)
-elseif(TARGET imgui)
-    target_link_libraries(myNotes PRIVATE glfw glad imgui dl m)
-else()
-    message(FATAL_ERROR "ImGui target not found")
-endif()
-
-# optional EGL (Wayland)
-find_library(EGL_LIB EGL)
-if(EGL_LIB)
-    target_link_libraries(myNotes PRIVATE ${EGL_LIB})
-endif()
+# now descend into src where the executable is defined
+add_subdirectory(src)
