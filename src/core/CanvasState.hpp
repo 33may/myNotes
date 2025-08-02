@@ -10,4 +10,7 @@ struct Stroke {
 
 struct CanvasState {
     std::vector<Stroke> strokes;
+
+    ImVec2 pan = ImVec2(0.0f, 0.0f);
+    float zoom = 1.0f;
 };

@@ -19,6 +19,11 @@ void RenderCanvas(const CanvasState& canvas) {
     // bg
     draw_list->AddRectFilled(canvas_pos,
         ImVec2(canvas_pos.x + canvas_size.x, canvas_pos.y + canvas_size.y),
+
+        // light
+        // IM_COL32(255, 255, 255, 255));
+        
+        // dark
         IM_COL32(40, 40, 50, 255));
 
     // strokes

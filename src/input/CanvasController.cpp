@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <cmath>
 
+
+#include <iostream>
+
 static bool point_near(const ImVec2& a, const ImVec2& b, float r) {
     float dx = a.x - b.x;
     float dy = a.y - b.y;
@@ -41,6 +44,15 @@ void CanvasController::update(CanvasState& canvas, History& history, bool& is_dr
                     return false;
                 }), strokes.end());
         }
+    }
+
+    // zoom
+
+    float wheel = io.MouseWheel;
+
+    if (wheel != 0){
+        canvas.zoom += wheel * 3e-2;
+        std::cout << canvas.zoom << std::endl;
     }
 
     // Undo / Redo shortcuts

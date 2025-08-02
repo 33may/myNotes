@@ -4,7 +4,7 @@
 void RenderToolPanel(CanvasState& canvas, History& history, ToolSettings& tool) {
     ImGui::Begin("Tools");
 
-    // Выбор инструмента
+    // Select Tool
     if (ImGui::RadioButton("Brush", tool.type == ToolType::Brush)) tool.type = ToolType::Brush;
     ImGui::SameLine();
     if (ImGui::RadioButton("Eraser", tool.type == ToolType::Eraser)) tool.type = ToolType::Eraser;
