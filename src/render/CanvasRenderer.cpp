@@ -1,6 +1,8 @@
 #include "render/CanvasRenderer.hpp"
 #include <imgui.h>
 
+#include <iostream>
+
 void RenderCanvas(const CanvasState& canvas) {
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
     ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
@@ -29,6 +31,11 @@ void RenderCanvas(const CanvasState& canvas) {
     // strokes
     for (const auto& s : canvas.strokes) {
         if (s.points.size() < 2) continue;
+
+        ImVec2 canvas_pos = ImGui::GetWindowPos();
+
+        // std::cout << canvas_pos[0] << " " << canvas_pos[1] << std::endl;
+
         draw_list->AddPolyline(s.points.data(),
             static_cast<int>(s.points.size()),
             ImColor(s.color),

@@ -11,9 +11,27 @@ static bool point_near(const ImVec2& a, const ImVec2& b, float r) {
     return dx*dx + dy*dy <= r * r;
 }
 
+ImVec2 last_mouse;
+
 void CanvasController::update(CanvasState& canvas, History& history, bool& is_drawing, ImGuiIO& io, ToolSettings& tool) {
+    // zoom
+    float wheel = io.MouseWheel;
+    if (wheel != 0){
+        canvas.zoom += wheel * 3e-2;
+    }
+
+    // pan
+    if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+
+        ImVec2 mouse_pos = io.MousePos;
+
+        ImVec2 d_mouse = ImVec2(mouse_pos[0] - last_mouse[0], mouse_pos[1] - last_mouse[1]);
+
+        canvas.pan.x += d_mouse.x;
+        canvas.pan.y += d_mouse.y;
+    }
     // Brush drawing
-    if (tool.type == ToolType::Brush) {
+    else if (tool.type == ToolType::Brush) {
         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
             history.push(canvas);
             is_drawing = true;
@@ -46,14 +64,9 @@ void CanvasController::update(CanvasState& canvas, History& history, bool& is_dr
         }
     }
 
-    // zoom
+    // update last mouse pos
+    last_mouse = io.MousePos;
 
-    float wheel = io.MouseWheel;
-
-    if (wheel != 0){
-        canvas.zoom += wheel * 3e-2;
-        std::cout << canvas.zoom << std::endl;
-    }
 
     // Undo / Redo shortcuts
     if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl) && ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
