@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cmath>
 
-
+#include <util/ImVecUtil.hpp>
 #include <iostream>
 
 static bool point_near(const ImVec2& a, const ImVec2& b, float r) {
@@ -14,6 +14,12 @@ static bool point_near(const ImVec2& a, const ImVec2& b, float r) {
 ImVec2 last_mouse;
 
 void CanvasController::update(CanvasState& canvas, History& history, bool& is_drawing, ImGuiIO& io, ToolSettings& tool) {
+    ImVec2 mouse_pos_screen = io.MousePos;
+
+    ImVec2 mouse_pos_world = mouse_pos_screen + canvas.pan;
+    std::cout << mouse_pos_world[0] << " " << mouse_pos_world[1] << std::endl;
+
+    
     // zoom
     float wheel = io.MouseWheel;
     if (wheel != 0){
@@ -21,11 +27,9 @@ void CanvasController::update(CanvasState& canvas, History& history, bool& is_dr
     }
 
     // pan
-    if (ImGui::IsKeyDown(ImGuiKey_LeftCtrl)) {
+    if (ImGui::IsKeyDown(ImGuiKey_LeftAlt)) {
 
-        ImVec2 mouse_pos = io.MousePos;
-
-        ImVec2 d_mouse = ImVec2(mouse_pos[0] - last_mouse[0], mouse_pos[1] - last_mouse[1]);
+        ImVec2 d_mouse = ImVec2(mouse_pos_screen[0] - last_mouse[0], mouse_pos_screen[1] - last_mouse[1]);
 
         canvas.pan.x += d_mouse.x;
         canvas.pan.y += d_mouse.y;
@@ -39,11 +43,11 @@ void CanvasController::update(CanvasState& canvas, History& history, bool& is_dr
             Stroke& s = canvas.strokes.back();
             s.color = tool.color;
             s.thickness = tool.radius;
-            s.points.push_back(io.MousePos);
+            s.points.push_back(mouse_pos_world);
         }
         if (is_drawing) {
             if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-                canvas.strokes.back().points.push_back(io.MousePos);
+                canvas.strokes.back().points.push_back(mouse_pos_world);
             } else {
                 is_drawing = false;
             }

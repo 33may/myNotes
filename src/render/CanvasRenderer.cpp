@@ -1,5 +1,6 @@
 #include "render/CanvasRenderer.hpp"
 #include <imgui.h>
+#include <util/ImVecUtil.hpp>
 
 #include <iostream>
 
@@ -32,11 +33,18 @@ void RenderCanvas(const CanvasState& canvas) {
     for (const auto& s : canvas.strokes) {
         if (s.points.size() < 2) continue;
 
-        ImVec2 canvas_pos = ImGui::GetWindowPos();
-
+        ImVec2 canvas_origin = ImGui::GetWindowPos();
         // std::cout << canvas_pos[0] << " " << canvas_pos[1] << std::endl;
 
-        draw_list->AddPolyline(s.points.data(),
+        std::vector<ImVec2> transformed;
+
+        transformed.reserve(s.points.size());
+        for (const ImVec2& p : s.points) {
+            ImVec2 t = p - canvas.pan;
+            transformed.push_back(t);
+        }
+        
+        draw_list->AddPolyline(transformed.data(),
             static_cast<int>(s.points.size()),
             ImColor(s.color),
             ImDrawFlags_None,
