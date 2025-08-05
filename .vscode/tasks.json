@@ -6,23 +6,40 @@
       "type": "shell",
       "command": "cmake",
       "args": [
-        "-S", ".",
-        "-B", "build",
-        "-G", "Ninja",
+        "-S",
+        ".",
+        "-B",
+        "build",
+        "-G",
+        "Ninja",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
       ],
-      "problemMatcher": ["$gcc"],
-      "group": { "kind": "build", "isDefault": false }
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
     },
     {
       "label": "cmake: build",
       "type": "shell",
       "command": "cmake",
-      "args": ["--build", "build", "--parallel"],
+      "args": [
+        "--build",
+        "build",
+        "--parallel"
+      ],
       "dependsOn": "cmake: configure",
-      "problemMatcher": ["$gcc"],
-      "group": { "kind": "build", "isDefault": true }
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }

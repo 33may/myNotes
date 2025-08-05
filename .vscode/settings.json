@@ -76,5 +76,26 @@
         "locale": "cpp",
         "queue": "cpp",
         "ranges": "cpp"
-    }
+    },
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.default.cStandard": "c17",
+    "C_Cpp.default.intelliSenseMode": "linux-clang-x64",
+    "C_Cpp.default.compilerPath": "/usr/bin/g++",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/external/imgui",
+        "${workspaceFolder}/external/glad/include",
+        "${workspaceFolder}/external/glfw/include"
+    ],
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.generator": "Ninja",
+    "cmake.debugConfig": {
+        "stopAtEntry": false,
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb"
+    },
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
 }

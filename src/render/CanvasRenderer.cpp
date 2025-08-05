@@ -1,5 +1,6 @@
 #include "render/CanvasRenderer.hpp"
 #include <imgui.h>
+#include "core/CanvasElement.hpp"
 #include <util/ImVecUtil.hpp>
 
 #include <iostream>
@@ -27,27 +28,27 @@ void RenderCanvas(const CanvasState& canvas) {
         IM_COL32(40, 40, 50, 255)
     );
 
-    // Draw each stroke with pan/zoom applied
-    for (const auto& s : canvas.strokes) {
-        if (s.points.size() < 2) continue;
-
-        std::vector<ImVec2> transformed;
-        transformed.reserve(s.points.size());
-
-        // Transform canvas-space points into screen space
-        for (const ImVec2& p : s.points) {
-            ImVec2 t = canvas_origin + canvas.pan + p * canvas.zoom;
-            transformed.push_back(t);
+    // Render each element (strokes, text, etc.)
+    for (const auto& element : canvas.elements) {
+        element->render(draw_list, canvas_origin, canvas.pan, canvas.zoom);
+        
+        // Highlight selected element
+        if (element.get() == canvas.selected_element) {
+            // Draw selection rectangle
+            if (auto text = dynamic_cast<TextLabel*>(element.get())) {
+                ImVec2 screen_pos = canvas_origin + canvas.pan + text->position * canvas.zoom;
+                ImVec2 text_size = ImGui::CalcTextSize(text->text.c_str());
+                text_size.x *= canvas.zoom;
+                text_size.y *= canvas.zoom;
+                
+                draw_list->AddRect(
+                    screen_pos,
+                    ImVec2(screen_pos.x + text_size.x, screen_pos.y + text_size.y),
+                    IM_COL32(255, 255, 0, 255),
+                    0.0f, 0, 2.0f
+                );
+            }
         }
-
-        float thickness = s.thickness * canvas.zoom; // scale thickness with zoom
-        draw_list->AddPolyline(
-            transformed.data(),
-            static_cast<int>(transformed.size()),
-            ImColor(s.color),
-            ImDrawFlags_None,
-            thickness
-        );
     }
 
     // Capture mouse interaction region over entire canvas

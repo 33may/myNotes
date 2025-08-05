@@ -3,11 +3,17 @@
         {
             "name": "Linux",
             "includePath": [
-                "${default}"
+                "${default}",
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/external/imgui",
+                "${workspaceFolder}/external/glad/include",
+                "${workspaceFolder}/external/glfw/include"
             ],
             "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "linux-clang-x64"
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-clang-x64",
+            "compilerPath": "/usr/bin/g++",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
